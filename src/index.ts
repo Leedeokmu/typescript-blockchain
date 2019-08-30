@@ -1,42 +1,49 @@
-class Human {
-    private _name:string;
-    private _age:number;
-    private _gender: string;
-    constructor(name:string, age:number, gender:string){
-        this._name = name;
-        this._age = age;
-        this._gender = gender;
-    }
-    set name(name: string) {
-        this._name = name;
-    }
-    set age(value: number) {
-        this._age = value;
-    }
+import * as CryptoJS from 'crypto-js';
 
-    set gender(value: string) {
-        this._gender = value;
-    }
+class Block {
+    public index: number;
+    public hash: string;
+    public previousHash: string;
+    public data: string;
+    public timestamp: number;
+    public static calculateBlockHash = (
+        index: number,
+        previousHash: string,
+        data: string,
+        timestamp: number
+    ): string => CryptoJS.SHA256(index + previousHash + data + timestamp).toString();
 
-    get name(): string {
-        return this._name;
-    }
-
-    get age(): number {
-        return this._age;
-    }
-
-    get gender(): string {
-        return this._gender;
+    constructor(index: number, hash: string, previousHash: string, data: string, timestamp: number) {
+        this.index = index;
+        this.hash = hash;
+        this.previousHash = previousHash;
+        this.data = data;
+        this.timestamp = timestamp;
     }
 }
 
-const deokmu = new Human('deokmu', 24, 'mail');
-deokmu.age = 12;
-const sayhi = (person: Human): string => {
-    return `hello ${person.name}, you are ${person.age}, you are a ${person.gender}`;
+const genesisBlock = new Block(0, "123123", "", "hello", 12345);
+let blockChain: Block[] = [genesisBlock];
+
+const getBlockchain = (): Block[] => blockChain;
+const getLatestBlock = (): Block => blockChain[blockChain.length - 1];
+const getNewTimestamp = (): number => Math.round(new Date().getTime() / 1000);
+const createNewBlock = (data: string): Block => {
+    const previousBlock = getLatestBlock();
+    const newIndex = previousBlock.index + 1;
+    const newTimestamp = getNewTimestamp();
+    const newHash = Block.calculateBlockHash(
+        newIndex,
+        previousBlock.hash,
+        data,
+        newTimestamp,
+    );
+    const newBlock = new Block(
+        newIndex,
+        newHash,
+        previousBlock.hash,
+        data,
+        newTimestamp
+    );
+    return newBlock;
 }
-
-console.log(sayhi(deokmu));
-
-export {}
