@@ -6,12 +6,16 @@ class Block {
     public previousHash: string;
     public data: string;
     public timestamp: number;
+
     public static calculateBlockHash = (
         index: number,
         previousHash: string,
         data: string,
         timestamp: number
     ): string => CryptoJS.SHA256(index + previousHash + data + timestamp).toString();
+
+    public static validateBlock = (block: Block): boolean =>
+        typeof block.index === "number" && typeof block.hash === "string" && typeof block.previousHash === "string" && typeof block.data === "string" && typeof block.timestamp === "number";
 
     constructor(index: number, hash: string, previousHash: string, data: string, timestamp: number) {
         this.index = index;
@@ -45,5 +49,29 @@ const createNewBlock = (data: string): Block => {
         data,
         newTimestamp
     );
-    return newBlock;
+    return addBlock(newBlock);
+}
+
+const getHashForBlock = (block: Block): string => Block.calculateBlockHash(block.index, block.previousHash, block.data, block.timestamp);
+
+const isBlockValid = (candidateBlock: Block, previousBloc: Block): boolean => {
+    if(!Block.validateBlock(candidateBlock)){
+        return false;
+    } else if(previousBloc.index + 1 !== candidateBlock.index){
+        return false;
+    } else if(previousBloc.hash !== candidateBlock.previousHash){
+        return false;
+    } else if(getHashForBlock(candidateBlock) !== candidateBlock.hash{
+        return false;
+    } else{
+        return true;
+    }
+}
+
+const addBlock = (candidateBlock: Block): Block=> {
+    if (isBlockValid(candidateBlock, getLatestBlock())) {
+        blockChain.push(candidateBlock);
+    }
+    return candidateBlock;
+
 }
