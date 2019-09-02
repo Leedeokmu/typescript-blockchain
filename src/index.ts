@@ -61,7 +61,7 @@ const isBlockValid = (candidateBlock: Block, previousBloc: Block): boolean => {
         return false;
     } else if(previousBloc.hash !== candidateBlock.previousHash){
         return false;
-    } else if(getHashForBlock(candidateBlock) !== candidateBlock.hash{
+    } else if(getHashForBlock(candidateBlock) !== candidateBlock.hash){
         return false;
     } else{
         return true;
